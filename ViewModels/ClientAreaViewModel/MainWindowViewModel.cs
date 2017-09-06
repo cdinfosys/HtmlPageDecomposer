@@ -5,7 +5,6 @@ using System.Windows.Input;
 using HtmlAgilityPack;
 using Microsoft.Practices.Unity;
 using Prism.Commands;
-using System.Windows;
 using Prism.Events;
 
 namespace HtmlPageDecomposer
@@ -17,11 +16,6 @@ namespace HtmlPageDecomposer
     {
         #region Private data members
             /// <summary>
-            ///     Stores a reference to the program's Unity container object.
-            /// </summary>
-            private IUnityContainer unityContainer;
-
-            /// <summary>
             ///     Storage for the <c>DocumentURL</c> property
             /// </summary>
             private String documentURL;
@@ -32,22 +26,26 @@ namespace HtmlPageDecomposer
             private Boolean isReloadButtonEnabled = false;
 
             /// <summary>
-            ///     Reference to the event aggregator object.
+            ///     Reference to the data store object.
             /// </summary>
-            private IEventAggregator eventAggregator;
+            private IDataStore dataStore;
         #endregion // Private data members
 
         #region Construction
             /// <summary>
             ///     Construct a view model object for the main window.
             /// </summary>
+            /// <param name="eventAggregator">
+            ///     Reference to a Unity event aggregator object.
+            /// </param>
             /// <param name="container">
             ///     Reference to a Unity container object.
             /// </param>
             public MainWindowViewModel(IEventAggregator eventAggregator, IUnityContainer container)
+                :   base(eventAggregator, container)
             {
-                this.unityContainer = container;
-                this.eventAggregator = eventAggregator;
+                dataStore = container.Resolve<IDataStore>();
+                DocumentURL = Properties.Settings.Default.LastUsedURL;
             }
         #endregion // Construction
 
@@ -59,7 +57,7 @@ namespace HtmlPageDecomposer
             {
                 get 
                 { 
-                    return this.unityContainer.Resolve<IClientAreaView>(); 
+                    return this.UnityContainer.Resolve<IClientAreaView>(); 
                 }
             }
 
@@ -87,6 +85,7 @@ namespace HtmlPageDecomposer
                 {
                     this.documentURL = value.Trim();
                     IsReloadButtonEnabled = (!String.IsNullOrWhiteSpace(this.documentURL));
+                    Properties.Settings.Default.LastUsedURL = documentURL;
                     RaisePropertyChanged();
                 }
             }
@@ -114,24 +113,25 @@ namespace HtmlPageDecomposer
             /// </summary>
             private void ReloadHtmlFromURLCommandHandler()
             {
+                // Store the current enabled state of the reload button
+                Boolean reloadButtonEnabled = this.IsReloadButtonEnabled;
+
+                // Disable the reload button while the document is loading.
+                this.IsReloadButtonEnabled = false;
                 try
                 {
-                    HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.CreateHttp(DocumentURL);
-                    using (HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse())
-                    {
-                        if (httpResponse.StatusCode == HttpStatusCode.OK)
-                        {
-                            using (Stream htmlStream = httpResponse.GetResponseStream())
-                            {
-                                HtmlDocument document = new HtmlDocument();
-                                document.Load(htmlStream);
-                            }
-                        }
-                    }
+                    this.dataStore.LoadHtmlFromURL(this.DocumentURL);
+                    this.EventAggregator.GetEvent<HtmlDocumentLoadedEvent>().Publish();
                 }
                 catch (Exception ex)
                 {
-                    this.eventAggregator.GetEvent<ReportExceptionEvent>().Publish(ex);
+                    // Report the exception
+                    this.EventAggregator.GetEvent<ReportExceptionEvent>().Publish(ex);
+                }
+                finally
+                {
+                    // Restore the button to its previous enabled state
+                    this.IsReloadButtonEnabled = reloadButtonEnabled;
                 }
             }
         #endregion // Private helper methods

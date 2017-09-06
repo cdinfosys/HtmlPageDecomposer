@@ -24,20 +24,24 @@ namespace HtmlPageDecomposer
         protected override void ConfigureContainer()
         {
             base.ConfigureContainer();
+
+            // Register the data store
+            this.Container.RegisterType<IDataStore, DataStore>(new ContainerControlledLifetimeManager());
+
             RegisterViews();
             RegisterViewModels();
         }
 
         private void RegisterViews()
         {
-            this.Container.RegisterType<IMainWindowView, MainWindow>();
-            this.Container.RegisterType<IClientAreaView, ClientAreaView>();
+            this.Container.RegisterType<IMainWindowView, MainWindow>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IClientAreaView, ClientAreaView>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViewModels()
         {
-            this.Container.RegisterType<IMainWindowViewModel, MainWindowViewModel>();
-            this.Container.RegisterType<IClientAreaViewModel, ClientAreaViewModel>();
+            this.Container.RegisterType<IMainWindowViewModel, MainWindowViewModel>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IClientAreaViewModel, ClientAreaViewModel>(new ContainerControlledLifetimeManager());
         }
     }
 }

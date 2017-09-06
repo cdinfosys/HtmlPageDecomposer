@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FAF97C84-F171-434D-9A31-3F6B2D685FFE}</ProjectGuid>
+    <ProjectGuid>{CB6F3097-1EAE-47AD-B3F3-BADD1F4ED03B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HtmlPageDecomposer</RootNamespace>
-    <AssemblyName>Views</AssemblyName>
+    <AssemblyName>HtmlElementsLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,46 +30,38 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <Reference Include="HtmlAgilityPack, Version=1.5.2.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.5.2\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows" />
-    <Reference Include="System.Xaml" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientAreaView.xaml.cs">
-      <DependentUpon>ClientAreaView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewBase.cs" />
+    <Compile Include="AttributeHRef.cs" />
+    <Compile Include="ElementHtml.cs" />
+    <Compile Include="ElementLink.cs" />
+    <Compile Include="HtmlAttributeBase.cs" />
+    <Compile Include="HtmlAttributesFactory.cs" />
+    <Compile Include="HtmlElementBase.cs" />
+    <Compile Include="HtmlElementsFactory.cs" />
+    <Compile Include="HtmlGenericAttribute.cs" />
+    <Compile Include="HtmlGenericElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HtmlPropertiesEditor\HtmlPropertiesEditor.csproj">
-      <Project>{9d322204-3e86-4f11-b340-a0206e0305dd}</Project>
-      <Name>HtmlPropertiesEditor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Interfaces\Interfaces\Interfaces.csproj">
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Interfaces\Interfaces\Interfaces.csproj">
       <Project>{7ccd1a8c-2762-48c1-97e7-585533f1808c}</Project>
       <Name>Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\UtilityLibrary\UtilityLibrary.csproj">
-      <Project>{fb26ad98-3d3c-4546-a716-324c62d2c063}</Project>
-      <Name>UtilityLibrary</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="ClientAreaView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

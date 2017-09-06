@@ -4,7 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:HtmlPageDecomposer"
-             mc:Ignorable="d" >
+             xmlns:properties="clr-namespace:HtmlPageDecomposer.Properties;assembly=UtilityLibrary"
+             xmlns:utillib="clr-namespace:HtmlPageDecomposer;assembly=UtilityLibrary"
+             mc:Ignorable="d"
+             x:Name="htmlPropertiesEditor">
     <UserControl.Resources>
         <Style x:Key="buttonGlyphs" TargetType="Button">
             <Setter Property="FontFamily" Value="Wingdings"/>
@@ -15,10 +18,14 @@
             <Setter Property="Background" Value="DarkGray"/>
         </Style>
 
+        <utillib:IntToGridLengthConverter x:Key="intToGridLengthConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition 
+                Width="{Binding DocumentElementsTreeWidthPixels, Source={x:Static properties:Settings.Default}, Mode=TwoWay, Converter={StaticResource intToGridLengthConverter}}" 
+                MinWidth="100" 
+                MaxWidth="600"/>
             <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -32,12 +39,28 @@
             Grid.Column="0"
             Grid.Row="0"
             Grid.RowSpan="3"
-            MinWidth="100">
-            <TreeViewItem Header="html">
-                <TreeViewItem Header="head"/>
-                <TreeViewItem Header="body"/>
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            ItemsSource="{Binding HtmlElementsTreeRootNode, Mode=OneWay}">
 
-            </TreeViewItem>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.ItemContainerStyle>
+
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding ElementTag}"/>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
         </TreeView>
 
         <GridSplitter 
@@ -45,6 +68,7 @@
             Grid.Row="0" 
             Grid.RowSpan="3" 
             Style="{StaticResource splitterStyling}"
+            Cursor="SizeWE"
             HorizontalAlignment="Stretch" 
             VerticalAlignment="Stretch" 
             ResizeBehavior="PreviousAndNext"

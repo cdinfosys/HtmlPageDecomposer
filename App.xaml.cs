@@ -19,5 +19,19 @@ namespace HtmlPageDecomposer
             Bootstrapper bootstrapper = new Bootstrapper();
             bootstrapper.Run();
         }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            try
+            {
+                HtmlPageDecomposer.Properties.Settings.Default.Save();
+            }
+            catch
+            {
+                // Don't do anything.
+            }
+
+            base.OnExit(e);
+        }
     } // class App
 } // namespace HtmlPageDecomposer
